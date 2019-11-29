@@ -1,0 +1,42 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "chcp 65001 && electron . --enable-logging",
+    "dev": "electron . --debug",
+    "dist": "electron-builder ."
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^7.1.1",
+    "electron-builder": "^21.2.0"
+  },
+  "build":{
+    "appId": "com.ldc.app",
+    "productName": "9394",
+    "win": {
+      "icon": "./icon.png"
+    },
+    "compression": "maximum",
+    "extraResources": [
+      {
+        "from": "./resources/extLib/",
+        "to": "extLib",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
+}
