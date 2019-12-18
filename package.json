@@ -2,7 +2,7 @@
   "name": "electron-quick-start",
   "version": "1.0.0",
   "description": "A minimal Electron application",
-  "main": "main.js",
+  "main": "./src/main/main.js",
   "scripts": {
     "start": "chcp 65001 && electron . --enable-logging",
     "dev": "electron . --debug",
@@ -22,21 +22,23 @@
     "electron": "^7.1.1",
     "electron-builder": "^21.2.0"
   },
-  "build":{
+  "dependencies": {
+    "jquery":"3.4.1",
+    "startbootstrap-sb-admin-2": "4.0.6",
+    "moment": "2.24.0",
+    "jquery-serializejson": "2.9.0",
+    "ioredis": "4.14.1"
+  },
+  "build": {
     "appId": "com.ldc.app",
-    "productName": "9394",
+    "productName": "Tool Box",
     "win": {
       "icon": "./icon.png"
     },
-    "compression": "maximum",
-    "extraResources": [
-      {
-        "from": "./resources/extLib/",
-        "to": "extLib",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ]
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "compression": "maximum"
   }
 }

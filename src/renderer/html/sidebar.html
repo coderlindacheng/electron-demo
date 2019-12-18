@@ -1,0 +1,69 @@
+<!-- Sidebar - Brand -->
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+    <div class="sidebar-brand-icon">
+        <!--<img src="./img/sf-logo.png">-->
+        <i class="fas fa-poo mr-3"></i>
+    </div>
+    <div class="sidebar-brand-text">L.D.C</div>
+</a>
+
+<!-- Divider -->
+<!-- <hr class="sidebar-divider my-0"> -->
+
+<!-- Nav Item - Dashboard -->
+<!-- <li class="nav-item active"> -->
+<!-- <a id="dashboard" class="nav-link" href="#" data-url="dashboard.html"> -->
+<!-- <i class="fas fa-fw fa-tachometer-alt"></i> -->
+<!-- <span>仪表盘</span></a> -->
+<!-- </li> -->
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Nav Item - Tables -->
+<li class="nav-item">
+    <a class="nav-link" href="#" data-url="../../renderer/html/json_parser.html">
+        <i class="fas fa-fw fa-horse"></i>
+        <span>Json解析器</span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<!-- Nav Item - Tables -->
+<li class="nav-item">
+    <a class="nav-link" href="#" data-url="../../renderer/html/cron_gen.html">
+        <i class="fas fa-fw fa-horse"></i>
+        <span>cron表达式自动生成</span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<!-- Nav Item - Tables -->
+<li class="nav-item">
+    <a class="nav-link" href="#" data-url="../../renderer/html/redis_manage.html">
+        <i class="fas fa-fw fa-horse"></i>
+        <span>redis管理</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
+
+<!-- Sidebar Toggler (Sidebar) -->
+<div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+</div>
+<script>
+    $(function () {
+        $.each($("a"), function (index, a) {
+            a = $(a);
+            let url = a.data("url");
+            if (url !== undefined && url !== null) {
+                a.click(function () {
+                    let dom = $("#mainPage");
+                    dom.empty();
+                    dom.load(url);
+                });
+            }
+        });
+    });
+</script>

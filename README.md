@@ -1,4 +1,4 @@
-# electron-quick-start
+# electron-demo
 
 **Clone and run for a quick way to see Electron in action.**
 
@@ -25,3 +25,7 @@ cnpm install
 npm start       -- 运行程序
 npm run dev     -- 研发模式运行程序
 npm run dist    -- 打包
+
+## 注意
+
+./src/render/html/index.html 不可以挪位置,且所有html都放在./src/render/html目录,因为主页面的位置是所有子页面的根目录,一动了,rootpath就变了

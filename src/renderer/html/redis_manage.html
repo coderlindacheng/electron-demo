@@ -1,0 +1,61 @@
+<link href="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/dataTables.bootstrap4.min.css"
+      rel="stylesheet">
+<h1 class="mb-5 text-gray-800">redis管理</h1>
+<div class="card shadow">
+    <div class="card-header">
+        <div class="row mt-3">
+            <div class="input-group ml-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-dark text-light">redis链接配置</span>
+                </div>
+                <textarea id="redisConfig" class="col-6 form-control form-control-lg" rows="9"
+                          onchange="initRedisConnect($(this).val(),true)"></textarea>
+            </div>
+        </div>
+        <div class="row mb-3 mt-4">
+            <div class="col-5 input-group ">
+                <select id="keyPrefix" class="col-5 custom-select">
+                    <option value="" selected>请选择...</option>
+                    <option value="K0003$">员工信息</option>
+                    <option value="K0002$">普通月结信息</option>
+                    <option value="K0005$">代收月结信息</option>
+                    <option value="K0010$">苹果少于30公斤配置</option>
+                    <option value="K0006$">区域类型配置</option>
+                    <option value="K0013$">帐套配置</option>
+                </select>
+                <input id="keyContent" type="text" class="col-auto form-control" placeholder="请输入需要查询的KEY以$好为分隔符"
+                       value="">
+            </div>
+            <div class="col-auto btn-group" role="group">
+                <button type="button" class="btn btn-dark" onclick="onSearch()">查询</button>
+                <button type="button" class="btn btn-dark" onclick="onDel()">删除</button>
+                <button id="switchConnectBtn" type="button" class="btn btn-dark " data-toggle="tooltip"
+                        data-placement="top" onclick="switchConnect(this)" title="你点一下试试,我不会告诉你,研发环境和测试环境是在这里切换的哦">研发环境
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="showData" class="table-responsive">
+        </div>
+        <div class="modal fade" id="OperTips" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">友情提示</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div id="delResult" class="modal-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page level plugins -->
+<script src="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="../js/redis_manage.js"></script>
