@@ -1,27 +1,25 @@
-$(function () {
-    if (Object.freeze){
-        Object.freeze(PUSH_TYPE);
-        Object.freeze(SYNC_FIELD);
-    }
-});
-
 //管理页面的大对象
-var genJsonHelper = {
+const genJsonHelper = {
     template: {main: {}},//模板敌营的clone方法,要注意的是模板里面存的一定是队列,而且在clone的时候,嵌套队列会被移除
-    json: "",//当前的json字符串
+    json: {},//当前的json字符串
     toAddCount: {},//存放全局的可增加实体的自增id
     type: ""//推送数据的类型
 };
 
 //推送类型,枚举
-var PUSH_TYPE = {
+const PUSH_TYPE = {
     OPERATION_WAYBILL: "operation.waybill",
     ACKBILL_RECEIVE: "ackbill",
     ACKBILL_WBEP: "ackbill.wbep",
     PKG_STATE: "package.state",
 };
 
-var SYNC_FIELD = ["waybillNo"];
+const SYNC_FIELD = ["waybillNo"];
+
+if (Object.freeze){
+    Object.freeze(PUSH_TYPE);
+    Object.freeze(SYNC_FIELD);
+}
 
 //格式化时间
 Date.prototype.Format = function (fmt) {
@@ -46,16 +44,16 @@ function getPkgStateDto(){
         "id": "",
         "packageNo": "",
         "packageStatus": "",
-        "eventCode": "",
         "operateCode": "",
+        "eventCode": "",
         "operateReasonCode": "",
-        "operateTm": "",
         "operateEmpCode": "",
         "operateZoneCode": "",
         "responseType": "",
         "responseCode": "",
         "responseDescription": "",
         "sysSource": "FVP-",
+        "operateTm": "",
         "createTm": "",
         "extendInfoList": [
             {
@@ -66,19 +64,19 @@ function getPkgStateDto(){
 }`);
 }
 
-//回单dto模板
 function getAckDto() {
+//回单dto模板
     return JSON.parse(`{
+    "waybillNo": "",
     "deliverEmpCode": "",
     "subscriberName": "",
-    "waybillNo": "",
     "clientCode": "",
     "destZoneCode": "",
     "signinTm": "",
-    "extAttrJson": "",
     "deliveredType": "",
     "realWeightQty": "",
     "inputerEmpCode": "",
+    "extAttrJson": "",
     "waybillFeeDtoList": [
         {
             "waybillNo": "",
@@ -125,9 +123,10 @@ function getAckDto() {
 }`);
 }
 
-//wbep回单dto模板
 function getWbepAckDto() {
+//wbep回单dto模板
     return JSON.parse(`{
+	"waybillNo":"",
     "opType":"",
 	"sourceZoneCode":"",
 	"oneselfPickupFlg":"",
@@ -135,36 +134,37 @@ function getWbepAckDto() {
 	"consignorPhone":"",
 	"consignorContName":"",
 	"consignorMobile":"",
+	"consigneeEmpCode":"",
 	"addresseeCompName":"",
 	"addresseePhone":"",
 	"addresseeContName":"",
 	"addresseeMobile":"",
-	"meterageWeightQty":"",
+	"consignedTm":"",
 	"innerParcelFlg":"",
 	"frangibleParcelFlg":"",
 	"trustParcelFlg":"",
 	"logId":"",
-	"waybillNo":"",
 	"destZoneCode":"",
 	"consignorAddr":"",
 	"addresseeAddr":"",
-	"realWeightQty":"",
+	"deliverEmpCode":"",
 	"quantity":"",
 	"freeParcelFlg":"",
 	"preCustomsDt":"",
-	"consignedTm":"",
 	"signinTm":"",
 	"waybillRemk":"",
 	"customsBatchs":"",
 	"auditedFlg":"",
-	"inputTm":"",
-	"auditedTm":"",
 	"suppTypeCode":"",
 	"boxTypeCode":"",
 	"cargoTypeCode":"",
 	"limitTypeCode":"",
+	"expressTypeCode":"",
+	"distanceTypeCode":"",
+	"transportTypeCode":"",
 	"inputTypeCode":"",
 	"unifiedCode":"",
+	"auditedTm":"",
 	"modifiedTm":"",
 	"deleteFlg":"",
 	"versionNo":"",
@@ -178,7 +178,12 @@ function getWbepAckDto() {
 	"countryCode":"",
 	"isThirdFlg":"",
 	"isCreditFlg":"",
+	"meterageWeightQty":"",
+	"realWeightQty":"",
 	"volume":"",
+	"billLong":"",
+	"billWidth":"",
+	"billHigh":"",
 	"consultCode":"",
 	"invoiceNo":"",
 	"isCredit":"",
@@ -187,19 +192,15 @@ function getWbepAckDto() {
 	"unitOfWeight":"",
 	"refundFreeFlg":"",
 	"newInputTm":"",
+	"inputTm":"",
 	"hvalueBoxType":"",
 	"codBillFlg":"",
 	"codType":"",
 	"totalConsValue":"",
-	"consigneeEmpCode":"",
-	"deliverEmpCode":"",
 	"subscriberName":"",
 	"inputerEmpCode":"",
 	"auditerEmpCode":"",
 	"customsTypeCode":"",
-	"distanceTypeCode":"",
-	"transportTypeCode":"",
-	"expressTypeCode":"",
 	"inputedZoneCode":"",
 	"needSignedBackFlg":"",
 	"signedBackWaybillNo":"",
@@ -227,9 +228,6 @@ function getWbepAckDto() {
 	"isB2C":"",
 	"goodsDealType":"",
 	"remarkThird":"",
-	"billLong":"",
-	"billWidth":"",
-	"billHigh":"",
 	"productCode":"",
 	"autoFeeFlag":"",
 	"isHis":"",
@@ -245,10 +243,10 @@ function getWbepAckDto() {
 		{
 			"logId":"",
 			"waybillNo":"",
-			"inputTm":"",
 			"inputTypeCode":"",
 			"versionNo":"",
 			"lockVersionNo":"",
+			"inputTm":"",
 			"newInputTm":"",
 			"isHis":"",
 			"waybillLogId":"",
@@ -263,14 +261,14 @@ function getWbepAckDto() {
 			"attr1":"",
 			"feeTypeCode":"",
 			"feeAmt":"",
+			"feeAmtInd":"",
+			"feeIndType":"",
 			"currencyCode":"",
 			"gatherEmpCode":"",
 			"sourceFeeAmt":"",
 			"exchangeRate":"",
 			"gstFeeAmt":"",
-			"refundFeeAmt":"",
-			"feeAmtInd":"",
-			"feeIndType":""
+			"refundFeeAmt":""
 		}
 	],
 	"waybillServices":[
@@ -313,13 +311,13 @@ function getWbepAckDto() {
 		{
 			"logId":"",
 			"waybillNo":"",
-			"inputTm":"",
 			"versionNo":"",
 			"lockVersionNo":"",
-			"newInputTm":"",
 			"waybillChildId":"",
 			"waybillLogId":"",
-			"waybillChildNo":""
+			"waybillChildNo":"",
+			"inputTm":"",
+			"newInputTm":""
 		}
 	],
 	"waybillVolumes":[{
@@ -331,15 +329,8 @@ function getWbepAckDto() {
 			"tall": ""
         }],
 	"waybillAdditionals":[{
-			"waybillNo": "",
-			"attr044": "",
-			"attr045": "",
-			"attr046": "",
-			"attr047": "",
-			"attr048": "",
-			"attr049": "",
-			"attr050": "",
 			"addId": "",
+			"waybillNo": "",
 			"attr001": "",
 			"attr002": "",
 			"attr003": "",
@@ -382,13 +373,20 @@ function getWbepAckDto() {
 			"attr040": "",
 			"attr041": "",
 			"attr042": "",
-			"attr043": ""
+			"attr043": "",
+			"attr044": "",
+			"attr045": "",
+			"attr046": "",
+			"attr047": "",
+			"attr048": "",
+			"attr049": "",
+			"attr050": ""
         }]
 }`)
 }
 
-//红冲模板
 function getRedinkDto() {
+//红冲模板
     return JSON.parse(`{
     "waybillNo": "",
     "sysCode": "",
@@ -397,17 +395,17 @@ function getRedinkDto() {
         "consignedTm": "",
         "signinTm": "",
         "consigneeEmpCode": "",
-        "meterageWeightQty": "",
+        "deliverEmpCode": "",
         "transportTypeCode": "",
         "sourceZoneCode": "",
+        "destZoneCode": "",
         "expressTypeCode": "",
         "limitTypeCode": "",
-        "destZoneCode": "",
         "distanceTypeCode": "",
-        "realWeightQty": "",
         "cargoTypeCode": "",
+        "meterageWeightQty": "",
+        "realWeightQty": "",
         "quantity": "",
-        "deliverEmpCode": "",
         "subscriberName": "",
         "productCode": "",
         "ackbillTypeCode": "",
@@ -438,23 +436,23 @@ function getRedinkDto() {
     },
     "serviceFeeList": [
         {
-            "sourceCodeFeeAmt": "",
-            "paymentTypeCode": "",
-            "customerAcctCode": "",
-            "sourceCurrencyCode": "",
-            "feeAmt": "",
-            "attribute5": "",
-            "attribute4": "",
-            "settlementTypeCode": "",
-            "paymentChangeTypeCode": "",
+            "feeTypeCode": "",
             "serviceProdCode": "",
-            "attribute1": "",
-            "operationType": "",
-            "attribute3": "",
-            "attribute2": "",
-            "gatherZoneCode": "",
-            "paymentTypeCode": "",
+            "feeAmt": "",
             "currencyCode": ""
+            "gatherZoneCode": "",
+            "settlementTypeCode": "",
+            "paymentTypeCode": "",
+            "paymentChangeTypeCode": "",
+            "customerAcctCode": "",
+            "sourceCodeFeeAmt": "",
+            "sourceCurrencyCode": "",
+            "attribute1": "",
+            "attribute2": "",
+            "attribute3": "",
+            "attribute4": "",
+            "attribute5": "",
+            "operationType": "",
         }
     ],
     "signFieldMap": {
@@ -500,55 +498,52 @@ function getRedinkDto() {
 }`);
 }
 
-//操作运单模板
 function getOperWaybillDto() {
+//操作运单模板
     return JSON.parse(`{
-    "versionNo": "",
     "waybillNo": "",
     "destZoneCode": "",
-    "realWeightQty": "",
-    "quantity": "",
+    "sourceZoneCode": "",
+    "consigneeEmpCode": "",
+    "deliverEmpCode": "",
     "consignedTm": "",
+    "signinTm": "",
     "cargoTypeCode": "",
     "limitTypeCode": "",
+    "productCode": "",
     "volume": "",
     "billLong": "",
     "billWidth": "",
     "billHigh": "",
-    "sourceZoneCode": "",
+    "realWeightQty": "",
     "meterageWeightQty": "",
-    "consigneeEmpCode": "",
+    "quantity": "",
     "distanceTypeCode": "",
     "transportTypeCode": "",
     "expressTypeCode": "",
     "lockVersionNo": "",
+    "versionNo": "",
     "unitWeight": "",
     "consValue": "",
-    "productCode": "",
     "waybillRemark": "",
     "orderNo": "",
-    "updateTm": "",
     "expectStartTm": "",
     "provider": "",
-    "createTm": "",
-    "extJson": "",
     "actionJson": "",
     "updateSource": "",
     "genOrderFlag": "",
-    "signinTm": "",
     "clientCode": "",
     "currentSource": "",
     "consValueCurrencyCode": "",
     "expectFinishTm": "",
     "dynExpcDeliveryTm": "",
-    "deliverEmpCode": "",
     "subscriberName": "",
+    "extJson": "",
+    "updateTm": "",
+    "createTm": "",
     "operationWaybillCustoms": {
         "waybillNo": "",
         "orderNo": "",
-        "updateTm": "",
-        "createTm": "",
-        "extJson": "",
         "customsTypeCode": "",
         "consignorPostalCode": "",
         "addresseePostalCode": "",
@@ -560,98 +555,99 @@ function getOperWaybillDto() {
         "sourcearea": "",
         "countryCode": "",
         "unifiedCode": "",
-        "consultCode": ""
+        "consultCode": "",
+        "extJson": "",
+        "updateTm": "",
+        "createTm": ""
     },
     "operationWaybillMarkList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "createTm": "",
-            "extJson": "",
+            "waybillNo": "",
+            "labellingId": "",
             "labellingPattern": "",
-            "labellingId": ""
+            "extJson": "",
+            "updateTm": "",
+            "createTm": ""
         }
     ],
     "operationWaybillFeeList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "createTm": "",
-            "extJson": "",
+            "waybillNo": "",
+            "feeTypeCode": "",
+            "feeAmt": "",
+            "feeAmtInd": "",
+            "feeIndType": "",
+            "currencyCode": "",
+            "gatherEmpCode": "",
             "gatherZoneCode": "",
             "paymentTypeCode": "",
             "settlementTypeCode": "",
             "paymentChangeTypeCode": "",
+            "exchangeRate": "",
             "customerAcctCode": "",
             "bizOwnerZoneCode": "",
             "sourceCodeFeeAmt": "",
             "destCurrencyCode": "",
             "valutionAcctCode": "",
-            "feeTypeCode": "",
-            "feeAmt": "",
-            "currencyCode": "",
-            "gatherEmpCode": "",
-            "exchangeRate": "",
-            "feeAmtInd": "",
-            "feeIndType": ""
+            "extJson": "",
+            "updateTm": "",
+            "createTm": ""
         }
     ],
     "operationWaybillAdditionList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "createTm": "",
-            "extJson": "",
-            "additionalValues": "",
+            "waybillNo": "",
             "additionalId": "",
-            "additionalKey": ""
+            "additionalKey": "",
+            "additionalValues": "",
+            "extJson": "",
+            "updateTm": "",
+            "createTm": ""
         }
     ],
     "operationWaybillCustomsList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "createTm": "",
-            "extJson": "",
+            "waybillNo": "",
+            "exportId": "",
             "customsTypeCode": "",
             "consignorPostalCode": "",
             "addresseePostalCode": "",
             "consignorTaxNo": "",
             "twinvoiceTypeCode": "",
-            "exportId": "",
             "customsBatchs": "",
             "preCustomsDt": "",
             "sourcearea": "",
             "countryCode": "",
             "unifiedCode": "",
-            "consultCode": ""
+            "consultCode": "",
+            "extJson": "",
+            "updateTm": "",
+            "createTm": ""
         }
     ],
     "operationWaybillServiceList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "createTm": "",
-            "extJson": "",
+            "waybillNo": "",
             "serviceProdCode": "",
+            "attribute1": "",
+            "attribute2": "",
             "attribute3": "",
             "attribute4": "",
             "attribute5": "",
-            "attribute1": "",
-            "attribute2": ""
+            "extJson": "",
+            "updateTm": "",
+            "createTm": ""
         }
     ],
     "optWaybillAdditionExtList": [
         {
-            "waybillNo": "",
             "orderNo": "",
-            "updateTm": "",
-            "extJson": "",
+            "waybillNo": "",
             "extId": "",
             "attr001": "",
             "attr002": "",
@@ -703,6 +699,8 @@ function getOperWaybillDto() {
             "attr048": "",
             "attr049": "",
             "attr050": "",
+            "extJson": "",
+            "updateTm": "",
             "createTime": ""
         }
     ]

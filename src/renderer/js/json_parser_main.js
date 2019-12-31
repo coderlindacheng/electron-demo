@@ -1,6 +1,7 @@
 $(function () {
     pickTemplate();
-    $("div#select_type input:radio:checked").change();
+    $("#select_type").trigger("change");
+    $("#operMain").sticky({topSpacing:0,zIndex:1});
 });
 
 /**
@@ -58,9 +59,11 @@ function buildForm(textarea) {
     syncFields();
     if (textarea !== undefined) {
         let json = JSON.stringify(toDraw, jsonParseFilter);
-        genJsonHelper.json = json === undefined ? "" : json;
-        textarea.value = genJsonHelper.json;
+        let type = genJsonHelper.type;
+        genJsonHelper.json[type] = json === undefined ? "" : json;
+        textarea.value = genJsonHelper.json[type];
     }
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 /**
@@ -82,13 +85,14 @@ function onChangeForm(clazz, input) {
      期望返回的json串是过滤掉空字符串所以期望是直接返回空串
      但是如果只执行一次JSON.stringify得到的结果将是 [null,null]
      */
-    let obj = $('#fields_to_json').serializeJSON({ useIntKeysAsArrayIndex: true });
+    let obj = $('#fields_to_json').serializeJSON({useIntKeysAsArrayIndex: true});
     let json = JSON.stringify(obj, jsonParseFilter);
     obj = JSON.parse(json, jsonParseFilter);
     json = JSON.stringify(obj, jsonParseFilter);
     /** *************************************************************/
-    genJsonHelper.json = json === undefined || json === null ? "" : json;
-    $('#to_json').val(genJsonHelper.json);
+    let type = genJsonHelper.type;
+    genJsonHelper.json[type] = json === undefined || json === null ? "" : json;
+    $('#to_json').val(genJsonHelper.json[type]);
 }
 
 /**
@@ -217,7 +221,7 @@ function draw(dto, namePrefix, toAddPrefix) {
             genJsonHelper.toAddCount[toAddid] = 0;
             toShow += `<div class="col-12 mt-3 ml-5">
                             <div class="row">
-                                <a href="##" class="btn btn-dark btn-icon-split" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
+                                <a href="##" class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
                                             <span class="icon text-white-50">
                                               <i class="fas fa-plus"></i>
                                             </span>
@@ -238,7 +242,7 @@ function draw(dto, namePrefix, toAddPrefix) {
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroup-sizing-sm">${fieldK}</span>
                                     </div>
-                                    <input name="${name}" type="text" class="${fieldK} form-control" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
+                                    <input name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
                                 </div>
                             </div>`;
         } else {
@@ -271,7 +275,7 @@ function appendItem(toAddid, draw, name, toDrawDto) {
     name = `${name}[${genJsonHelper.toAddCount[toAddid]++}]`;
     toShow += `<div id="${name}" class="row mt-3">`;
     toShow += `<div class="col-12">`;
-    toShow += ` <a href="##" class="btn btn-outline-dark btn-circle" onclick="(function() {delItem('${name}');})()">
+    toShow += ` <a href="##" class="btn btn-outline-dark btn-circle" data-toggle="tooltip" data-placement="right" title="点一下删除" onclick="(function() {delItem('${name}');})()">
                     <i class="fas fa-minus"></i>
                   </a>`;
     toShow += `</div>`;
@@ -375,22 +379,18 @@ function cloneWithoutArray(source) {
  * 部署选择模板触发器
  */
 function pickTemplate() {
-    $("#operWaybill").change(function () {
-        genJsonHelper.type = PUSH_TYPE.OPERATION_WAYBILL;
-        initForm(getOperWaybillDto());
-    });
-    $("#ackDto").change(function () {
-        genJsonHelper.type = PUSH_TYPE.ACKBILL_RECEIVE;
-        initForm(getAckDto());
-    });
-    $("#wbepAckDto").change(function () {
-        genJsonHelper.type = PUSH_TYPE.ACKBILL_WBEP;
-        initForm(getWbepAckDto());
-    });
-    $("#pkgStateDto").change(function () {
-        genJsonHelper.type = PUSH_TYPE.PKG_STATE;
-        initForm(getPkgStateDto());
-    });
+    $("#select_type").on("change",function () {
+        genJsonHelper.type = $(this).val();
+        if (PUSH_TYPE.OPERATION_WAYBILL === genJsonHelper.type){
+            initForm(getOperWaybillDto());
+        }else if (PUSH_TYPE.ACKBILL_RECEIVE === genJsonHelper.type){
+            initForm(getAckDto());
+        }else if (PUSH_TYPE.ACKBILL_WBEP === genJsonHelper.type){
+            initForm(getWbepAckDto());
+        }else if (PUSH_TYPE.PKG_STATE === genJsonHelper.type){
+            initForm(getPkgStateDto());
+        }
+    })
 }
 
 /**
@@ -403,8 +403,7 @@ function initForm(dto) {
     }
     initTemplate(dto);
     buildForm();
-    genJsonHelper.json = "";
-    $('#to_json').val("")
+    $('#to_json').val(genJsonHelper.json[genJsonHelper.type])
 }
 
 /**
@@ -413,13 +412,14 @@ function initForm(dto) {
  * @param btn
  */
 function sendData(btn) {
-    if (!isBlankString(genJsonHelper.json) && genJsonHelper.json !== "{}" && genJsonHelper.json !== undefined && genJsonHelper.json !== null) {
+    let type = genJsonHelper.type;
+    if (!isBlankString(genJsonHelper.json[type]) && genJsonHelper.json !== "{}" && genJsonHelper.json[type] !== undefined && genJsonHelper.json[type] !== null) {
         $.ajax({
             type: 'post',
             url: $("#sendUrl").val(),
             data: JSON.stringify({
-                "type": genJsonHelper.type,
-                "msg": genJsonHelper.json
+                "type": type,
+                "msg": genJsonHelper.json[type]
             }),
             contentType: 'application/json;charset=utf-8',
             dataType: 'json',

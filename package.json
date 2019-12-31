@@ -27,7 +27,8 @@
     "startbootstrap-sb-admin-2": "4.0.6",
     "moment": "2.24.0",
     "jquery-serializejson": "2.9.0",
-    "ioredis": "4.14.1"
+    "ioredis": "4.14.1",
+    "jquery-sticky": "1.0.4"
   },
   "build": {
     "appId": "com.ldc.app",
