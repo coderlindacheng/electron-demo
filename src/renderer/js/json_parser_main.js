@@ -1,9 +1,36 @@
+var Holmes = require("holmes.js");
+var holmes;
 $(function () {
     pickTemplate();
     $("#select_type").trigger("change");
     $("#operMain").sticky({topSpacing:0,zIndex:1});
 });
 
+/**
+ * 每次动态构建元素的时候,就要从新初始化一次
+ */
+function initHolmes() {
+    let toSearch;
+    if (holmes !== undefined) {
+        toSearch = holmes.inputString();
+    }
+
+    holmes = Holmes({
+        input: '.search input', // default: input[type=search]
+        find: '.results div', // querySelectorAll that matches each of the results individually
+        // onHidden: function (el) {
+        //         //     let $el = $(el);
+        //         //     if ($el.hasClass("delbtn")){
+        //         //         $el.removeClass("hidden");
+        //         //     }
+        //         // }
+    });
+    holmes.start();
+    if (toSearch !== undefined) {
+        holmes.setInput(toSearch);
+        holmes.search();//触发搜索
+    }
+}
 /**
  * json解析过滤器
  *
@@ -64,6 +91,7 @@ function buildForm(textarea) {
         textarea.value = genJsonHelper.json[type];
     }
     $('[data-toggle="tooltip"]').tooltip();
+    initHolmes();
 }
 
 /**
@@ -229,7 +257,7 @@ function draw(dto, namePrefix, toAddPrefix) {
                                           </a>
                             </div>
                             <div class="row">
-                                            <div id ="${toAddid}" class="col-12">`;
+                                            <div id ="${toAddid}" class="col-12 delbtn">`;
             for (let item of fieldV) {
                 toShow += appendItem(toAddid, draw, `${name}`, item);
             }
@@ -240,9 +268,9 @@ function draw(dto, namePrefix, toAddPrefix) {
             toShow += `<div class="col-7">
                                 <div class="input-group input-group-sm">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">${fieldK}</span>
+                                        <span class="input-group-text">${fieldK}</span>
                                     </div>
-                                    <input name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
+                                    <input id="${name}" name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
                                 </div>
                             </div>`;
         } else {
@@ -288,7 +316,10 @@ function appendItem(toAddid, draw, name, toDrawDto) {
 
     if (toDrawDto === undefined) {
         $(`#${toAddid}`).append(toShow);
+        $('[data-toggle="tooltip"]').tooltip('hide');
+        initHolmes();
         syncFields();
+        return;
     }
     return toShow;
 }

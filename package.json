@@ -23,12 +23,14 @@
     "electron-builder": "^21.2.0"
   },
   "dependencies": {
-    "jquery":"3.4.1",
-    "startbootstrap-sb-admin-2": "4.0.6",
-    "moment": "2.24.0",
-    "jquery-serializejson": "2.9.0",
+    "holmes.js": "^1.17.3",
     "ioredis": "4.14.1",
-    "jquery-sticky": "1.0.4"
+    "jquery": "3.4.1",
+    "jquery-serializejson": "2.9.0",
+    "jquery-sticky": "1.0.4",
+    "jump.js": "^1.0.2",
+    "moment": "2.24.0",
+    "startbootstrap-sb-admin-2": "4.0.6"
   },
   "build": {
     "appId": "com.ldc.app",
