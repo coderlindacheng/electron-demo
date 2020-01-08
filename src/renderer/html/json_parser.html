@@ -1,9 +1,13 @@
 <style>
     .input-group>.input-group-prepend {
-        flex: 0 0 15%;
+        flex: 0 0 20%;
     }
     .input-group .input-group-text {
         width: 100%;
+    }
+    /*holmes.js实际上是在元素中添加.hidden去隐藏元素所以要额外加上这个css*/
+    .hidden {
+        display: none;
     }
 </style>
 <h1 class="mb-5 text-gray-800">运单数据模拟</h1>
@@ -45,6 +49,17 @@
                     </select>
                 </div>
             </div>
+
+            <div class="row mt-3">
+                <div class="input-group search">
+                    <input type="search" class="form-control bg-light small col-3" placeholder="需要搜索的字段名">
+                    <div class="input-group-append">
+                        <button class="btn btn-dark" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -52,7 +67,7 @@
         <div class="row mb-5">
             <div class="col-auto">
                 <form id="fields_to_json">
-                    <div id="fields_area" class="row">
+                    <div id="fields_area" class="row results">
                     </div>
                 </form>
             </div>

@@ -1,9 +1,36 @@
+var Holmes = require("holmes.js");
+var holmes;
 $(function () {
     pickTemplate();
     $("#select_type").trigger("change");
     $("#operMain").sticky({topSpacing:0,zIndex:1});
 });
 
+/**
+ * 每次动态构建元素的时候,就要从新初始化一次
+ */
+function initHolmes() {
+    let toSearch;
+    if (holmes !== undefined) {
+        toSearch = holmes.inputString();
+    }
+
+    holmes = Holmes({
+        input: '.search input', // default: input[type=search]
+        find: '.results div', // querySelectorAll that matches each of the results individually
+        onHidden: function (el) {
+            let $el = $(el);
+            if ($el.hasClass("del-btn")||$el.hasClass("add-btn")||$el.hasClass("obj-btn")){
+                $el.removeClass("hidden");
+            }
+        }
+    });
+    holmes.start();
+    if (toSearch !== undefined) {
+        holmes.setInput(toSearch);
+        holmes.search();//触发搜索
+    }
+}
 /**
  * json解析过滤器
  *
@@ -64,6 +91,7 @@ function buildForm(textarea) {
         textarea.value = genJsonHelper.json[type];
     }
     $('[data-toggle="tooltip"]').tooltip();
+    initHolmes();
 }
 
 /**
@@ -220,7 +248,7 @@ function draw(dto, namePrefix, toAddPrefix) {
         if (isArray(fieldV) && genJsonHelper.template[toAddid] !== undefined) {
             genJsonHelper.toAddCount[toAddid] = 0;
             toShow += `<div class="col-12 mt-3 ml-5">
-                            <div class="row">
+                            <div class="row  obj-btn">
                                 <a href="##" class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
                                             <span class="icon text-white-50">
                                               <i class="fas fa-plus"></i>
@@ -240,14 +268,14 @@ function draw(dto, namePrefix, toAddPrefix) {
             toShow += `<div class="col-7">
                                 <div class="input-group input-group-sm">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">${fieldK}</span>
+                                        <span class="input-group-text">${fieldK}</span>
                                     </div>
-                                    <input name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
+                                    <input id="${name}" name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
                                 </div>
                             </div>`;
         } else {
             toShow += `<div class="col-12 mt-3 ml-5">
-                            <div class="row">
+                            <div class="row add-btn">
                                 <a href="javascript:void(0);" class="btn btn-dark btn-icon-split">
                                             <span class="text">${name}</span>
                                           </a>
@@ -274,9 +302,9 @@ function appendItem(toAddid, draw, name, toDrawDto) {
     let toShow = "";
     name = `${name}[${genJsonHelper.toAddCount[toAddid]++}]`;
     toShow += `<div id="${name}" class="row mt-3">`;
-    toShow += `<div class="col-12">`;
+    toShow += `<div class="col-12 del-btn">`;
     toShow += ` <a href="##" class="btn btn-outline-dark btn-circle" data-toggle="tooltip" data-placement="right" title="点一下删除" onclick="(function() {delItem('${name}');})()">
-                    <i class="fas fa-minus"></i>
+                    <i class="fas fa-minus"/>
                   </a>`;
     toShow += `</div>`;
     if (toDrawDto === undefined) {
@@ -288,7 +316,10 @@ function appendItem(toAddid, draw, name, toDrawDto) {
 
     if (toDrawDto === undefined) {
         $(`#${toAddid}`).append(toShow);
+        $('[data-toggle="tooltip"]').tooltip('hide');
+        initHolmes();
         syncFields();
+        return;
     }
     return toShow;
 }

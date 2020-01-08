@@ -12,3 +12,4 @@ $(function () {
 function global() {
     $.getScript("../js/json_parser_objs.js");
 }
+
