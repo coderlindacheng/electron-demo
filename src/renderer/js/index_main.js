@@ -1,7 +1,7 @@
 global();
 $(function () {
     $.get("sidebar.html", function (data) {
-        $("#accordionSidebar").append(data);
+        $("#accordionSidebar").prepend(data);
     });
     $("#mainPage").load("../../renderer/html/json_parser.html");
 });
