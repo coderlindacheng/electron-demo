@@ -313,10 +313,10 @@ function appendItem(toAddid, draw, name, toDrawDto) {
         toShow += draw(toDrawDto, name, toAddid);
     }
     toShow += `</div>`;
-
     if (toDrawDto === undefined) {
         $(`#${toAddid}`).append(toShow);
         $('[data-toggle="tooltip"]').tooltip('hide');
+        $('[data-toggle="tooltip"]').tooltip();
         initHolmes();
         syncFields();
         return;
