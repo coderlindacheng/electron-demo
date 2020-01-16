@@ -433,8 +433,9 @@ function initForm(dto) {
         alert("请配置合法的模板")
     }
     initTemplate(dto);
-    buildForm();
-    $('#to_json').val(genJsonHelper.json[genJsonHelper.type])
+    let $toJson = $('#to_json');
+    $toJson.val(genJsonHelper.json[genJsonHelper.type])
+    buildForm($toJson[0]);
 }
 
 /**

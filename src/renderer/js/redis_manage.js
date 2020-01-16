@@ -37,13 +37,14 @@ function switchConnect(btn) {
     $btn.empty();
     if (dev) {
         dev = false;
-        initRedisConnect(sitRedisConfig)
+        initRedisConnect(sitRedisConfig);
         $btn.append("测试环境");
     } else {
         dev = true;
-        initRedisConnect(devRedisConfig)
+        initRedisConnect(devRedisConfig);
         $btn.append("研发环境");
     }
+    $('[data-toggle="tooltip"]').tooltip('hide');
 }
 
 function onSearch() {
