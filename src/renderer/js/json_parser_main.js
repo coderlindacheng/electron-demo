@@ -350,6 +350,7 @@ function syncFields() {
  * @param toDelId
  */
 function delItem(toDelId) {
+    $('[data-toggle="tooltip"]').tooltip('hide');
     toDelId = toDelId.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
     $(`#${toDelId}`).remove();
     onChangeForm();
