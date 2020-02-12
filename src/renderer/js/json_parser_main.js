@@ -413,14 +413,8 @@ function cloneWithoutArray(source) {
 function pickTemplate() {
     $("#select_type").on("change",function () {
         genJsonHelper.type = $(this).val();
-        if (PUSH_TYPE.OPERATION_WAYBILL === genJsonHelper.type){
-            initForm(getOperWaybillDto());
-        }else if (PUSH_TYPE.ACKBILL_RECEIVE === genJsonHelper.type){
-            initForm(getAckDto());
-        }else if (PUSH_TYPE.ACKBILL_WBEP === genJsonHelper.type){
-            initForm(getWbepAckDto());
-        }else if (PUSH_TYPE.PKG_STATE === genJsonHelper.type){
-            initForm(getPkgStateDto());
+        if (PUSH_TYPE.COMPANY_INFO === genJsonHelper.type){
+            initForm(getCompanyInfoDto());
         }
     })
 }

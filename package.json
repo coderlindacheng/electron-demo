@@ -4,7 +4,7 @@
   "description": "A minimal Electron application",
   "main": "./src/main/main.js",
   "scripts": {
-    "start": "chcp 65001 && electron . --enable-logging",
+    "start": "electron . --enable-logging",
     "dev": "electron . --debug",
     "dist": "electron-builder ."
   },
@@ -19,8 +19,8 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^7.1.1",
-    "electron-builder": "^21.2.0"
+    "electron": "^8.0.0",
+    "electron-builder": "^22.3.2"
   },
   "dependencies": {
     "holmes.js": "^1.17.3",
@@ -29,6 +29,7 @@
     "jquery-serializejson": "2.9.0",
     "jquery-sticky": "1.0.4",
     "moment": "2.24.0",
+    "popper.js": "^1.16.1",
     "startbootstrap-sb-admin-2": "4.0.6"
   },
   "build": {

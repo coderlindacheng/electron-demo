@@ -1,21 +1,21 @@
 var Redis = require("ioredis");
 var sitRedisConfig = `{
     "sentinels": [
-        {"host": "shiva-oms-sws1.cachesit.sfdc.com.cn", "port": "8001"},
-        {"host": "shiva-oms-sws2.cachesit.sfdc.com.cn", "port": "8001"},
-        {"host": "shiva-oms-sws3.cachesit.sfdc.com.cn", "port": "8001"}
+        {"host": "ldc.redis.sit1.com", "port": "8001"},
+        {"host": "ldc.redis.sit2.com", "port": "8001"},
+        {"host": "ldc.redis.sit3.com", "port": "8001"}
     ],
-    "name": "SHIVA_OMS_SWS_REDIS_C01",
-    "password": "gmjisnkpp8jtwqsx"
+    "name": "SIT_CLUSTER01",
+    "password": "*******"
 }`;
 var devRedisConfig = `{
     "sentinels": [
-        {"host": "Qv9138Nt-1.cachesit.sfcloud.local", "port": "8001"},
-        {"host": "Qv9138Nt-2.cachesit.sfcloud.local", "port": "8001"},
-        {"host": "Qv9138Nt-3.cachesit.sfcloud.local", "port": "8001"}
+        {"host": "ldc.redis.dev1.com", "port": "8001"},
+        {"host": "ldc.redis.dev2.com", "port": "8001"},
+        {"host": "ldc.redis.dev3.com", "port": "8001"}
     ],
-    "name": "SHIVA-OMS-SWS_Qv9138Nt_CLUSTER01",
-    "password": "AhXv30rElUfc"
+    "name": "DEV_CLUSTER01",
+    "password": "********"
 }`;
 var redis;
 var dev = true;
