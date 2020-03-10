@@ -8,7 +8,7 @@
     "dev": "electron . --debug",
     "dist": "electron-builder ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/coderlindacheng/electron-demo",
   "keywords": [
     "Electron",
     "quick",
