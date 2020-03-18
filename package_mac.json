@@ -8,7 +8,7 @@
     "dev": "electron . --debug",
     "dist": "electron-builder ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/coderlindacheng/electron-demo",
   "keywords": [
     "Electron",
     "quick",
@@ -16,7 +16,7 @@
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
+  "author": "L.D.C",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^8.0.0",
@@ -35,13 +35,10 @@
   "build": {
     "appId": "com.ldc.app",
     "productName": "Tool Box",
-    "win": {
+    "mac": {
       "icon": "./icon.png"
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
+    "dmg":{},
     "compression": "maximum"
   }
 }

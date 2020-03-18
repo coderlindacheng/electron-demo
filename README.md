@@ -41,7 +41,6 @@ npm run dist    -- 打包
 
 ./src/render/html/index.html 不可以挪位置,且所有html都放在./src/render/html目录,因为主页面的位置是所有子页面的根目录,一动了,rootpath就变了
 
-还有打包的我只配置了Windows的,没有配置其他平台的,偷懒了,哈哈哈哈哈哈哈哈
-
+默认是打Windows得包,要打mac的包,就把package_mac.json覆盖package.json文件
 
 这不是一个完全的版本,还有些功能没完成的
