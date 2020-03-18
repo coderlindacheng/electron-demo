@@ -20,7 +20,13 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 cnpm install
 
-如果还是被墙,去下面的地址手动下载资源就完事了[electron-builder-binaries](https://github.com/electron-userland/electron-builder-binaries/releases)
+如果还是被墙
+
+Windows环境下:
+去下面的地址手动下载资源就完事了[electron-builder-binaries](https://github.com/electron-userland/electron-builder-binaries/releases)
+
+MAC环境下:
+设置环境变量 ELECTRON_MIRROR="https://cdn.npm.taobao.org/dist/electron/" 才能打包成功
 
 npm start       -- 运行程序
 npm run dev     -- 研发模式运行程序
