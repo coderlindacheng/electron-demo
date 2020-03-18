@@ -23,7 +23,12 @@ cnpm install
 如果还是被墙
 
 Windows环境下:
-去下面的地址手动下载资源就完事了[electron-builder-binaries](https://github.com/electron-userland/electron-builder-binaries/releases)
+
+C:\User\~\AppData\Local\electron\Cache
+
+C:\User\~\AppData\Local\electron-builder\Cache
+
+去下面的地址手动下载资源放到上面两个对应目录就完事了[electron-builder-binaries](https://github.com/electron-userland/electron-builder-binaries/releases)
 
 MAC环境下:
 设置环境变量 ELECTRON_MIRROR="https://cdn.npm.taobao.org/dist/electron/" 才能打包成功
