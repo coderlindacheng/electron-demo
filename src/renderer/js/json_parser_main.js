@@ -3,7 +3,7 @@ var holmes;
 $(function () {
     pickTemplate();
     $("#select_type").trigger("change");
-    $("#operMain").sticky({topSpacing:0,zIndex:1});
+    $("#operMain").sticky({ topSpacing: 0, zIndex: 1 });
 });
 
 /**
@@ -20,7 +20,7 @@ function initHolmes() {
         find: '.results div', // querySelectorAll that matches each of the results individually
         onHidden: function (el) {
             let $el = $(el);
-            if ($el.hasClass("del-btn")||$el.hasClass("add-btn")||$el.hasClass("obj-btn")){
+            if ($el.hasClass("del-btn") || $el.hasClass("add-btn") || $el.hasClass("obj-btn")) {
                 $el.removeClass("hidden");
             }
         }
@@ -39,6 +39,9 @@ function initHolmes() {
  * @returns {*} 返回 undefined 就是删除对应键值对的内容,但是要注意多试,里面坑蛮多的
  */
 function jsonParseFilter(k, v) {
+    if (isNumber(v)) {
+        v = String(v);
+    }
     if (isNeedlessObj(v)) {
         return undefined;
     } else if (isArray(v)) {
@@ -84,12 +87,10 @@ function buildForm(textarea) {
     fieldArea.empty();
     fieldArea.append(genHtml);
     syncFields();
-    if (textarea !== undefined) {
-        let json = JSON.stringify(toDraw, jsonParseFilter);
-        let type = genJsonHelper.type;
-        genJsonHelper.json[type] = json === undefined ? "" : json;
-        textarea.value = genJsonHelper.json[type];
-    }
+    let json = JSON.stringify(toDraw, jsonParseFilter);
+    let type = genJsonHelper.type;
+    genJsonHelper.json[type] = json === undefined ? "" : json;
+    textarea.value = genJsonHelper.json[type];
     $('[data-toggle="tooltip"]').tooltip();
     initHolmes();
 }
@@ -113,7 +114,7 @@ function onChangeForm(clazz, input) {
      期望返回的json串是过滤掉空字符串所以期望是直接返回空串
      但是如果只执行一次JSON.stringify得到的结果将是 [null,null]
      */
-    let obj = $('#fields_to_json').serializeJSON({useIntKeysAsArrayIndex: true});
+    let obj = $('#fields_to_json').serializeJSON({ useIntKeysAsArrayIndex: true });
     let json = JSON.stringify(obj, jsonParseFilter);
     obj = JSON.parse(json, jsonParseFilter);
     json = JSON.stringify(obj, jsonParseFilter);
@@ -249,12 +250,12 @@ function draw(dto, namePrefix, toAddPrefix) {
             genJsonHelper.toAddCount[toAddid] = 0;
             toShow += `<div class="col-12 mt-3 ml-5">
                             <div class="row  obj-btn">
-                                <a href="##" class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
+                                <a href=" " class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
                                             <span class="icon text-white-50">
                                               <i class="fas fa-plus"></i>
                                             </span>
                                             <span class="text">${name}</span>
-                                          </a>
+                                          </a >
                             </div>
                             <div class="row">
                                             <div id ="${toAddid}" class="col-12">`;
@@ -278,7 +279,7 @@ function draw(dto, namePrefix, toAddPrefix) {
                             <div class="row add-btn">
                                 <a href="javascript:void(0);" class="btn btn-dark btn-icon-split">
                                             <span class="text">${name}</span>
-                                          </a>
+                                          </a >
                             </div>
                 <div class="row">`;
             toShow += draw(fieldV, name, toAddid);
@@ -305,7 +306,7 @@ function appendItem(toAddid, draw, name, toDrawDto) {
     toShow += `<div class="col-12 del-btn">`;
     toShow += ` <a href="##" class="btn btn-outline-dark btn-circle" data-toggle="tooltip" data-placement="right" title="点一下删除" onclick="(function() {delItem('${name}');})()">
                     <i class="fas fa-minus"/>
-                  </a>`;
+                  </a >`;
     toShow += `</div>`;
     if (toDrawDto === undefined) {
         toShow += draw(genJsonHelper.template[toAddid](), name, toAddid);
@@ -314,14 +315,30 @@ function appendItem(toAddid, draw, name, toDrawDto) {
     }
     toShow += `</div>`;
     if (toDrawDto === undefined) {
+        $('#search_feilds').val('');
         $(`#${toAddid}`).append(toShow);
         $('[data-toggle="tooltip"]').tooltip('hide');
         $('[data-toggle="tooltip"]').tooltip();
         initHolmes();
         syncFields();
+        click_scroll(name);
         return;
     }
     return toShow;
+}
+
+/**
+ * 滚动到指定地方
+ * 
+ * @param {string} toScrollId 
+ */
+function click_scroll(toScrollId) {
+    debugger;
+    toScrollId = toScrollId.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+    var scroll_offset = $(`#${toScrollId}`).offset(); //得到pos这个div层的offset，包含两个值，top和left 
+    $("body,html").animate({
+        scrollTop: scroll_offset.top - 330//让body的scrollTop等于pos的top，就实现了滚动 
+    }, 0);
 }
 
 /**
@@ -374,6 +391,15 @@ function isString(obj) {
     return typeof obj === "string";
 }
 
+/**
+ * 是否数字
+ * @param obj
+ * @returns {boolean}
+ */
+function isNumber(obj) {
+    return typeof obj === "number";
+}
+
 function isObject(obj) {
     return obj instanceof Object;
 }
@@ -383,7 +409,7 @@ function isArray(obj) {
 }
 
 function isNeedlessObj(obj) {
-    return obj === undefined || isBlankString(obj) || $.isEmptyObject(obj) || obj === null;
+    return obj === undefined || isBlankString(obj) || (isObject(obj) && $.isEmptyObject(obj)) || obj === null;
 }
 
 function panic(msg) {
@@ -411,9 +437,9 @@ function cloneWithoutArray(source) {
  * 部署选择模板触发器
  */
 function pickTemplate() {
-    $("#select_type").on("change",function () {
+    $("#select_type").on("change", function () {
         genJsonHelper.type = $(this).val();
-        if (PUSH_TYPE.COMPANY_INFO === genJsonHelper.type){
+        if (PUSH_TYPE.COMPANY_INFO === genJsonHelper.type) {
             initForm(getCompanyInfoDto());
         }
     })

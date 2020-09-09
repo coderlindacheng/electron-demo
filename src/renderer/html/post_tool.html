@@ -1,0 +1,31 @@
+<link href="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/dataTables.bootstrap4.min.css"
+      rel="stylesheet">
+<h1 class="mb-5 text-gray-800">POST工具</h1>
+<div class="card shadow">
+    <div class="card-header">
+        <div class="row mt-3">
+            <div class="input-group ml-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-dark text-light">URL</span>
+                </div>
+                <input type="text" id="sendUrl" class="col-4 form-control" onchange="saveUrl(this)">
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mt-3 col-8">
+            <div class="input-group input-group-lg" style="z-index:1">
+            <textarea id="psot_content" class="form-control form-control-lg" placeholder="请输入post报文" rows="10" onchange="savePostContent(this)"></textarea>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-dark btn-lg" type="button" onclick="sendData(this)">推送</button>
+                </div>
+            </div>
+            <textarea id="psot_res" class="form-control form-control-lg mt-5" placeholder="请输入post报文" rows="10" onchange="savePostContent(this)" readonly="true"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- Page level plugins -->
+<script src="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="../../../node_modules/startbootstrap-sb-admin-2/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="../js/post_tool.js"></script>
