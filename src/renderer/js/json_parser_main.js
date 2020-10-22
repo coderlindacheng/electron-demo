@@ -169,10 +169,14 @@ function buildTargetDto(source, target, prefix) {
  * 初始化模板
  * @param dto
  */
-function initTemplate(dto) {
+function initTemplate(dtoFunc) {
+    var dto = dtoFunc();
+    if (dto === undefined || dto === null || $.isEmptyObject(dto) || (isArray(dto) && dto.length <= 0)) {
+        alert("请配置合法的模板")
+    }
     initChildTemplate(dto);
     genJsonHelper.template.main = function () {
-        return cloneWithoutArray(dto);
+        return cloneWithoutArray(dtoFunc());
     };
 }
 
@@ -440,7 +444,7 @@ function pickTemplate() {
     $("#select_type").on("change", function () {
         genJsonHelper.type = $(this).val();
         if (PUSH_TYPE.COMPANY_INFO === genJsonHelper.type) {
-            initForm(getCompanyInfoDto());
+            initForm(getCompanyInfoDto);
         }
     })
 }
@@ -449,11 +453,8 @@ function pickTemplate() {
  * 初始化表单
  * @param dto
  */
-function initForm(dto) {
-    if (dto === undefined || dto === null || $.isEmptyObject(dto) || (isArray(dto) && dto.length <= 0)) {
-        alert("请配置合法的模板")
-    }
-    initTemplate(dto);
+function initForm(dtoFunc) {
+    initTemplate(dtoFunc);
     let $toJson = $('#to_json');
     $toJson.val(genJsonHelper.json[genJsonHelper.type])
     buildForm($toJson[0]);
