@@ -2,15 +2,18 @@
     .input-group>.input-group-prepend {
         flex: 0 0 20%;
     }
+
     .input-group .input-group-text {
         width: 100%;
     }
+
     /*holmes.js实际上是在元素中添加.hidden去隐藏元素所以要额外加上这个css*/
     .hidden {
         display: none;
     }
 </style>
-<h1 class="mb-5 text-gray-800">Json解析器</h1>
+<h1 class="mb-5 text-gray-800">运单数据模拟</h1>
+<!-- Modal -->
 <div class="card shadow">
     <div class="card-header" id="operMain">
         <div class="ml-2">
@@ -19,37 +22,36 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-dark text-light">请输入要推送的URL</span>
                     </div>
-                    <input type="text" id="sendUrl" class="col-4 form-control"
-                           value="http://localhost:8888/sws/dev/jsonTest">
+                    <input type="text" id="sendUrl" class="col-4 form-control">
                 </div>
             </div>
             <!--文本框还有一些按钮-->
             <div class="row mt-3">
                 <div class="input-group input-group-lg" style="z-index:1">
-                <textarea id="to_json" class="form-control form-control-lg" placeholder="请输入对应的JSON格式的报文" rows="6"
-                          onchange="buildForm(this)"></textarea>
+                    <textarea id="to_json" class="form-control form-control-lg" placeholder="请输入对应的JSON格式的报文" rows="6"
+                        onchange="buildForm(this)"></textarea>
                     <div class="input-group-append">
                         <button class="btn btn-outline-dark btn-lg" type="button" onclick="sendData(this)">推送</button>
-<!--                        <button class="btn btn-outline-dark btn-lg" type="button">保存模板</button>-->
-<!--                        <button class="btn btn-outline-dark dropdown-toggle" type="button" data-toggle="dropdown">模板-->
-<!--                        </button>-->
-<!--                        <div class="dropdown-menu">-->
-<!--                            <a class="dropdown-item" href="#">Action</a>-->
-<!--                            <a class="dropdown-item" href="#">Another action</a>-->
-<!--                            <a class="dropdown-item" href="#">Something else here</a>-->
-<!--                            <div role="separator" class="dropdown-divider"></div>-->
-<!--                            <a class="dropdown-item" href="#">Separated link</a>-->
-<!--                        </div>-->
+                        <!--                        <button class="btn btn-outline-dark btn-lg" type="button">保存模板</button>-->
+                        <!--                        <button class="btn btn-outline-dark dropdown-toggle" type="button" data-toggle="dropdown">模板-->
+                        <!--</button>-->
+                        <!--                        <div class="dropdown-menu">-->
+                        <!--                            <a class="dropdown-item" href=" ">Action</a >-->
+                        <!--                            <a class="dropdown-item" href="#">Another action</a >-->
+                        <!--                            <a class="dropdown-item" href="#">Something else here</a >-->
+                        <!--                            <div role="separator" class="dropdown-divider"></div>-->
+                        <!--                            <a class="dropdown-item" href="#">Separated link</a >-->
+                        <!--                        </div>-->
                     </div>
                     <select id="select_type" class="custom-select col-2" size="6">
-                        <option value="company.info" selected>公司信息</option>
                     </select>
                 </div>
             </div>
 
             <div class="row mt-3">
                 <div class="input-group search" style="z-index:1">
-                    <input type="search" class="form-control bg-light small col-3" placeholder="需要搜索的字段名">
+                    <input id="search_feilds" type="search" class="form-control bg-light small col-3"
+                        placeholder="需要搜索的字段名">
                     <div class="input-group-append">
                         <button class="btn btn-dark" type="button">
                             <i class="fas fa-search fa-sm"></i>
@@ -67,6 +69,25 @@
                     <div id="fields_area" class="row results">
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="popup" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">推送提示</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <p id="alter_msg"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

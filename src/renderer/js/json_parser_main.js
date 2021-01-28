@@ -1,6 +1,15 @@
 var Holmes = require("holmes.js");
 var holmes;
 $(function () {
+    for (let k in PUSH_INFO) {
+        let item = PUSH_INFO[k];
+        $("#select_type").append(item.option())
+    }
+    if (genJsonHelper.pushInfo === undefined) {
+        $("#select_type").val(PUSH_INFO.COMPANY_INFO.type);
+    } else {
+        $("#select_type").val(genJsonHelper.pushInfo.type);
+    }
     pickTemplate();
     $("#select_type").trigger("change");
     $("#operMain").sticky({ topSpacing: 0, zIndex: 1 });
@@ -88,7 +97,7 @@ function buildForm(textarea) {
     fieldArea.append(genHtml);
     syncFields();
     let json = JSON.stringify(toDraw, jsonParseFilter);
-    let type = genJsonHelper.type;
+    let type = genJsonHelper.pushInfo.type;
     genJsonHelper.json[type] = json === undefined ? "" : json;
     textarea.value = genJsonHelper.json[type];
     $('[data-toggle="tooltip"]').tooltip();
@@ -116,10 +125,13 @@ function onChangeForm(clazz, input) {
      */
     let obj = $('#fields_to_json').serializeJSON({ useIntKeysAsArrayIndex: true });
     let json = JSON.stringify(obj, jsonParseFilter);
+    if (json === undefined) {
+        json = "{}";
+    }
     obj = JSON.parse(json, jsonParseFilter);
     json = JSON.stringify(obj, jsonParseFilter);
     /** *************************************************************/
-    let type = genJsonHelper.type;
+    let type = genJsonHelper.pushInfo.type;
     genJsonHelper.json[type] = json === undefined || json === null ? "" : json;
     $('#to_json').val(genJsonHelper.json[type]);
 }
@@ -145,8 +157,7 @@ function buildTargetDto(source, target, prefix) {
         }
         if (isArray(sourceV) && sourceV.length > 0) {
             //构建模板的时候已经决定了只要对应的key存在模板,则模板对应的字段一定为数组
-            let template = genJsonHelper.template[key];
-            if (template !== undefined) {
+            let template = genJsonHelper.template[key]; if (template !== undefined) {
                 for (let item of sourceV) {
                     let newVar = template();
                     buildTargetDto(item, newVar, key);
@@ -169,10 +180,14 @@ function buildTargetDto(source, target, prefix) {
  * 初始化模板
  * @param dto
  */
-function initTemplate(dto) {
+function initTemplate(dtoFunc) {
+    let dto = dtoFunc();
+    if (dto === undefined || dto === null || $.isEmptyObject(dto) || (isArray(dto) && dto.length <= 0)) {
+        alert("请配置合法的模板")
+    }
     initChildTemplate(dto);
     genJsonHelper.template.main = function () {
-        return cloneWithoutArray(dto);
+        return cloneWithoutArray(dtoFunc());
     };
 }
 
@@ -193,8 +208,7 @@ function initChildTemplate(dto, prefix) {
         if (isArray(fieldV) && fieldV.length > 0) {
             if (fieldV.length > 1) {
                 panic(`模板中不允许[${key}]的长度大于1`);
-            }
-            let firstItem = fieldV[0];
+            } let firstItem = fieldV[0];
             dto[fieldK] = [];
 
             if (isArray(firstItem)) {
@@ -239,9 +253,7 @@ function draw(dto, namePrefix, toAddPrefix) {
             name = fieldK;
             toAddid = name;
         }
-        let fieldV = dto[fieldK];
-
-        //如果是Tm结尾的字段,给个系统当前时间
+        let fieldV = dto[fieldK];//如果是Tm结尾的字段,给个系统当前时间
         if (isBlankString(fieldV) && fieldK.endsWith("Tm")) {
             fieldV = new Date().Format("yyyy-MM-dd HH:mm:ss").toString();
             dto[fieldK] = fieldV;
@@ -250,7 +262,7 @@ function draw(dto, namePrefix, toAddPrefix) {
             genJsonHelper.toAddCount[toAddid] = 0;
             toShow += `<div class="col-12 mt-3 ml-5">
                             <div class="row  obj-btn">
-                                <a href=" " class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
+                                <a href="#" class="btn btn-dark btn-icon-split" data-toggle="tooltip" data-placement="right" title="点一下新增" onclick="(function(obj) {appendItem('${toAddid}',draw,'${name}');})(this)">
                                             <span class="icon text-white-50">
                                               <i class="fas fa-plus"></i>
                                             </span>
@@ -267,21 +279,21 @@ function draw(dto, namePrefix, toAddPrefix) {
                         </div>`;
         } else if (isString(fieldV) || isArray(fieldV)) {//模板已经把空对象和undefined,null变成了空字符串,所以这里不需要关注了
             toShow += `<div class="col-7">
-                                <div class="input-group input-group-sm">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">${fieldK}</span>
-                                    </div>
-                                    <input id="${name}" name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
-                                </div>
-                            </div>`;
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">${fieldK}</span>
+                </div>
+                <input id="${name}" name="${name}" type="text" class="${fieldK} form-control col-4" value='${fieldV}' onchange="onChangeForm('${fieldK}',this)">
+            </div>
+        </div>`;
         } else {
             toShow += `<div class="col-12 mt-3 ml-5">
-                            <div class="row add-btn">
-                                <a href="javascript:void(0);" class="btn btn-dark btn-icon-split">
-                                            <span class="text">${name}</span>
-                                          </a >
-                            </div>
-                <div class="row">`;
+        <div class="row add-btn">
+            <a href="#" class="btn btn-dark btn-icon-split">
+                        <span class="text">${name}</span>
+                      </a >
+        </div>
+<div class="row">`;
             toShow += draw(fieldV, name, toAddid);
             toShow += `</div>`;
             toShow += `</div>`;
@@ -291,22 +303,22 @@ function draw(dto, namePrefix, toAddPrefix) {
 }
 
 /**
- * 添加实体对应的html到指定id的区域
- *
- * @param toAddid
- * @param draw 递归调用的draw方法
- * @param name 组成每个字段html的name属性或可增删实体id的前缀,永远从form格式输出成json字符串
- * @param toDrawDto 需要被画出来的dto
- * @returns {string} 最后生成的html
- */
+* 添加实体对应的html到指定id的区域
+*
+* @param toAddid
+* @param draw 递归调用的draw方法
+* @param name 组成每个字段html的name属性或可增删实体id的前缀,永远从form格式输出成json字符串
+* @param toDrawDto 需要被画出来的dto
+* @returns {string} 最后生成的html
+*/
 function appendItem(toAddid, draw, name, toDrawDto) {
     let toShow = "";
     name = `${name}[${genJsonHelper.toAddCount[toAddid]++}]`;
     toShow += `<div id="${name}" class="row mt-3">`;
     toShow += `<div class="col-12 del-btn">`;
-    toShow += ` <a href="##" class="btn btn-outline-dark btn-circle" data-toggle="tooltip" data-placement="right" title="点一下删除" onclick="(function() {delItem('${name}');})()">
-                    <i class="fas fa-minus"/>
-                  </a >`;
+    toShow += ` <a href="#" class="btn btn-outline-dark btn-circle" data-toggle="tooltip" data-placement="right" title="点一下删除" onclick="(function() {delItem('${name}');})()">
+                <i class="fas fa-minus"/>
+              </a >`;
     toShow += `</div>`;
     if (toDrawDto === undefined) {
         toShow += draw(genJsonHelper.template[toAddid](), name, toAddid);
@@ -322,18 +334,18 @@ function appendItem(toAddid, draw, name, toDrawDto) {
         initHolmes();
         syncFields();
         click_scroll(name);
-        return;
+        return toShow;
     }
     return toShow;
 }
 
 /**
- * 滚动到指定地方
- * 
- * @param {string} toScrollId 
- */
+* 滚动到指定地方
+* 
+* @param {string} toScrollId 
+*/
 function click_scroll(toScrollId) {
-    debugger;
+
     toScrollId = toScrollId.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
     var scroll_offset = $(`#${toScrollId}`).offset(); //得到pos这个div层的offset，包含两个值，top和left 
     $("body,html").animate({
@@ -342,8 +354,8 @@ function click_scroll(toScrollId) {
 }
 
 /**
- * 同步指定字段
- */
+* 同步指定字段
+*/
 function syncFields() {
     for (let toSync of SYNC_FIELD) {
         let syncVal = "";
@@ -362,10 +374,10 @@ function syncFields() {
 }
 
 /**
- * 删除实体
- *
- * @param toDelId
- */
+* 删除实体
+*
+* @param toDelId
+*/
 function delItem(toDelId) {
     $('[data-toggle="tooltip"]').tooltip('hide');
     toDelId = toDelId.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
@@ -374,28 +386,28 @@ function delItem(toDelId) {
 }
 
 /**
- * 是否空白字符串
- * @param str 传入的参先保证它是字符串类型(如果非字符串类型则返回false)
- * @returns {boolean}
- */
+* 是否空白字符串
+* @param str 传入的参先保证它是字符串类型(如果非字符串类型则返回false)
+* @returns {boolean}
+*/
 function isBlankString(str) {
     return str === '' ? true : isString(str) && $.trim(str) === '';
 }
 
 /**
- * 是否字符串
- * @param obj
- * @returns {boolean}
- */
+* 是否字符串
+* @param obj
+* @returns {boolean}
+*/
 function isString(obj) {
     return typeof obj === "string";
 }
 
 /**
- * 是否数字
- * @param obj
- * @returns {boolean}
- */
+* 是否数字
+* @param obj
+* @returns {boolean}
+*/
 function isNumber(obj) {
     return typeof obj === "number";
 }
@@ -418,9 +430,9 @@ function panic(msg) {
 }
 
 /**
- * 克隆实体
- * @param source
- */
+* 克隆实体
+* @param source
+*/
 function cloneWithoutArray(source) {
     let target = {};
     $.extend(target, source);
@@ -434,28 +446,31 @@ function cloneWithoutArray(source) {
 }
 
 /**
- * 部署选择模板触发器
- */
+* 部署选择模板触发器
+*/
 function pickTemplate() {
     $("#select_type").on("change", function () {
-        genJsonHelper.type = $(this).val();
-        if (PUSH_TYPE.COMPANY_INFO === genJsonHelper.type) {
-            initForm(getCompanyInfoDto());
+        let type = $(this).val();
+        for (let k in PUSH_INFO) {
+            let item = PUSH_INFO[k];
+            if (item.type === type) {
+                genJsonHelper.pushInfo = item;
+                initForm(item.initObj);
+                $("#sendUrl").val(item.url);
+                return;
+            }
         }
     })
 }
 
 /**
  * 初始化表单
- * @param dto
+ * @param dtoFunc
  */
-function initForm(dto) {
-    if (dto === undefined || dto === null || $.isEmptyObject(dto) || (isArray(dto) && dto.length <= 0)) {
-        alert("请配置合法的模板")
-    }
-    initTemplate(dto);
+function initForm(dtoFunc) {
+    initTemplate(dtoFunc);
     let $toJson = $('#to_json');
-    $toJson.val(genJsonHelper.json[genJsonHelper.type])
+    $toJson.val(genJsonHelper.json[genJsonHelper.pushInfo.type])
     buildForm($toJson[0]);
 }
 
@@ -465,28 +480,35 @@ function initForm(dto) {
  * @param btn
  */
 function sendData(btn) {
-    let type = genJsonHelper.type;
+    let type = genJsonHelper.pushInfo.type;
     if (!isBlankString(genJsonHelper.json[type]) && genJsonHelper.json !== "{}" && genJsonHelper.json[type] !== undefined && genJsonHelper.json[type] !== null) {
         $.ajax({
             type: 'post',
-            url: $("#sendUrl").val(),
-            data: JSON.stringify({
-                "type": type,
-                "msg": genJsonHelper.json[type]
-            }),
+            url: genJsonHelper.pushInfo.url,
+            data: genJsonHelper.pushInfo.pushJson(genJsonHelper.json[type]),
             contentType: 'application/json;charset=utf-8',
             dataType: 'json',
             async: true,
             success: function (data) {
-                alert(data.value);
+                $('#popup').on('show.bs.modal', function () {
+                    $('#alter_msg').text(JSON.stringify(data));
+                });
+                $('#popup').modal();
             },
             error: function (request, textStatus, errorThrown) {
-                console.error(`发送数据失败`);
-                console.error(`status=${request.status},readyState=${request.readyState},textStatus=${textStatus}`);
+                let errMsg = `发送数据失败\nstatus=${request.status},readyState=${request.readyState},textStatus=${textStatus}`
+                console.error(errMsg); console.error(`tatus=${request.status},readyState=${request.readyState},textStatus=${textStatus}`);
+                $('#popup').on('show.bs.modal', function () {
+                    $('#alter_msg').text(errMsg);
+                });
+                $('#popup').modal();
             }
         });
     } else {
-        $(btn).popover("不能推送空的报文");
+        $('#popup').on('show.bs.modal', function () {
+            $('#alter_msg').text("不能推送空的报文");
+        });
+        $('#popup').modal();
     }
 
 }

@@ -1,20 +1,42 @@
 //管理页面的大对象
 const genJsonHelper = {
-    template: {main: {}},//模板敌营的clone方法,要注意的是模板里面存的一定是队列,而且在clone的时候,嵌套队列会被移除
+    template: { main: {} },//模板的clone方法,要注意的是模板里面存的一定是队列,而且在clone的时候,嵌套队列会被移除
     json: {},//当前的json字符串
     toAddCount: {},//存放全局的可增加实体的自增id
-    type: ""//推送数据的类型
+    pushInfo: undefined//推送数据的类型
 };
 
-//推送类型,枚举
-const PUSH_TYPE = {
-    COMPANY_INFO: "company.info",
+function defaultPush(msg) {
+    return JSON.stringify({
+        "type": this.type,
+        "msg": msg
+    });
+}
+
+const defaultUrl = "http://localhost:8888/dev/jsonTest"
+
+//推送类型,
+const PUSH_INFO = {
+    COMPANY_INFO: {
+        url: defaultUrl,
+        type: "company_info",
+        pushJson: defaultPush,
+        initObj: getCompanyInfoDto,
+        option: function () { return `<option value=\"${this.type}\">公司信息</option>` }
+    },
+    COUNTRY_INFO: {
+        url: defaultUrl,
+        type: "county_info",
+        pushJson: defaultPush,
+        initObj: getCountryInfoDto,
+        option: function () { return `<option value=\"${this.type}\">国家信息</option>` }
+    }
 };
 
 const SYNC_FIELD = ["id"];
 
-if (Object.freeze){
-    Object.freeze(PUSH_TYPE);
+if (Object.freeze) {
+    Object.freeze(PUSH_INFO);
     Object.freeze(SYNC_FIELD);
 }
 
@@ -36,7 +58,7 @@ Date.prototype.Format = function (fmt) {
 };
 
 //DTO模板
-function getCompanyInfoDto(){
+function getCompanyInfoDto() {
     return JSON.parse(`{
         "id": "",
         "companyName": "",
@@ -56,7 +78,32 @@ function getCompanyInfoDto(){
                     }
                 ]
             }]
-        }
-        ]
+        }]
+    }`);
+}
+
+//DTO模板
+function getCountryInfoDto() {
+    return JSON.parse(`{
+        "id": "",
+        "countryName": "",
+        "longitude": "",
+        "longitude": "",
+        "latitude": "",
+        "timeZone": "",
+        "province":[{
+            "id": "",
+            "name": "",
+            "city":[{
+                "id": "",
+                "name": "",
+                "block":[
+                    {
+                        "id": "",
+                        "name": ""
+                    }
+                ]
+            }]
+        }]
     }`);
 }
