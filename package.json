@@ -35,7 +35,7 @@
   "build": {
     "appId": "com.ldc.app",
     "productName": "Tool Box",
-    "mac": {
+    "win": {
       "icon": "./icon.png"
     },
     "dmg":{},
